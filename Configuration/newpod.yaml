@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: nginxweb1
+spec:
+  containers: 
+  - image: nginx
+    name: nginxweb1
+    labels: env=dev
