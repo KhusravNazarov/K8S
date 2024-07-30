@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: DaemonSet # loiunch one pod/node
+metadata:
+  name: kplabs-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: khusravs-antivirus
+  template:
+    metadata:
+      labels:
+        name: khusravs-antivirus
+    spec:
+      containers:
+      - name: kplabs-pods
+        image: nginx
