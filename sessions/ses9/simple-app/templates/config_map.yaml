@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+data:
+  myvalue: "Hello World"
+  drink: {{ .Values.favorites.drink }} # add function
+  food: {{ quote .Values.favorites.food | quote}} #pipe function
+  {{ if eq .Values.favorites.drink "coffee" }}mug: "true"{{ end }}
