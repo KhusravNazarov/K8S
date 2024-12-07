@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-ngunx-service
+spec:
+  selector:
+    app: nginx
+  sessionAffinity: ClientIP
+  ports:
+    - protocol: TCP
+      port: 80          #service port
+      targetPort: 80    # Pods port

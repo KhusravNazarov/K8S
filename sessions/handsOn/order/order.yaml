@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod 
+metadata:
+  name: order-pod
+  labels: 
+    env: dev
+    tier: front
+spec:
+  containers:
+  - image: khusravnazarov/order:v1
+    name: oder-ps
+    ports:
+    - containerPort: 5002
+      protocol: TCP

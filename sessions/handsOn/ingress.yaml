@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: game-2048-ingress
+  namespace: 2048-game
+  annotations:
+    # ALB Ingress Controller annotations
+    alb.ingress.k8s.io/scheme: internet-facing    # Can be 'internet-facing' or 'internal'
+    alb.ingress.k8s.io/target-type: ip             # Options: 'ip' or 'instance'
+    alb.ingress.k8s.io/ingress-class: alb          # The ingress class name for the ALB Ingress Controller
+    alb.ingress.k8s.io/success-code: "200"        # HTTP response code that should be considered a success
+spec:
+  rules:
+    - host: app1.safar-it.com.info   # The DNS name for your ALB. Replace with your desired domain name
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: game-2048         # The service that this Ingress routes to
+                port:
+                  number: 80            # The port of the service

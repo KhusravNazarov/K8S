@@ -1,0 +1,17 @@
+apiVersion: v1                # Kubernetes API version used in this YAML decriptor
+kind: Pod                     # Type of Kubernetes object/resource
+metadata:                     # Pod metadata (name, labels, annotations and so on)
+  name: nginx-pod1           # Pod Name
+  labels:
+    env: dev
+    tier: frontend
+  annotations:
+    description: this pod is created to run nginx
+
+spec:                         # Pod Specification/Contents (list of containers, volumes, image, ports and so on)
+  containers:
+  - image: nginx             # Container Image
+    name: nginx-container     # Container Name
+    ports:            
+    - containerPort: 8080      # The Port the container is listening on
+      protocol: TCP

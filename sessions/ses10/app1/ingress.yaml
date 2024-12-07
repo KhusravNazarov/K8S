@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: "app1.safar-it.com.info"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: app-1-service
+            port:
+              number: 80
+  - host: "app2.safar-it.com.info"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: app-2-service
+            port:
+              number: 80

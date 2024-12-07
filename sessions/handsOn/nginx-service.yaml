@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: 2048-game
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+    - port: 80          # Port exposed by the service
+      targetPort: 80     # Port exposed by the container in the pod
+      nodePort: 30008    # Specific NodePort to expose (optional, Kubernetes will auto-assign if omitted)

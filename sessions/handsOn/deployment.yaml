@@ -1,0 +1,93 @@
+# kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1 # to  change teh image 
+# Deployment uses rs to manage pods and it creates new rs in rollout phase
+# Deployment ensures that only a certain number of Pods are down while they are being updated. By default, it ensures that at least 75% of the desired number of Pods are up (25% max unavailable).
+# kubectl describe deployment   name: nginx-deployment
+  #  Normal  ScalingReplicaSet  21m   deployment-controller  Scaled up replica set nginx-deployment-d556bf558 to 3
+  #  Normal  ScalingReplicaSet  14m   deployment-controller  Scaled up replica set nginx-deployment-7dbfbc79cf to 1
+  # Normal  ScalingReplicaSet  14m   deployment-controller  Scaled down replica set nginx-deployment-d556bf558 to 2 from 3
+  # Normal  ScalingReplicaSet  14m   deployment-controller  Scaled up replica set nginx-deployment-7dbfbc79cf to 2 from 1
+  # Normal  ScalingReplicaSet  14m   deployment-controller  Scaled down replica set nginx-deployment-d556bf558 to 1 from 2
+  # Normal  ScalingReplicaSet  14m   deployment-controller  Scaled up replica set nginx-deployment-7dbfbc79cf to 3 from 2
+  # Normal  ScalingReplicaSet  14m   deployment-controller  Scaled down replica set nginx-deployment-d556bf558 to 0 from 1
+  #In API version apps/v1, a Deployment's label selector is immutable after it gets created.
+  # kubectl rollout history deployment/nginx-deployment # check the revisions
+  # kubectl rollout history deployment/nginx-deployment --revision=2 # check the specific revision
+  # kubectl rollout undo deployment/nginx-deployment #Rolling Back to a Previous Revision
+  # kubectl rollout undo deployment/nginx-deployment --to-revision=2 # rollout to specific revision
+  # kubectl scale deployment/nginx-deployment --replicas=6 # scale 
+
+# Failed Deployment
+# Your Deployment may get stuck trying to deploy its newest ReplicaSet without ever completing. This can occur due to some of the following factors:
+
+# Insufficient quota
+# Readiness probe failures
+# Image pull errors
+# Insufficient permissions
+# Limit ranges
+# Application runtime misconfiguration
+
+# .spec.revisionHistoryLimit is an optional field that specifies the number of old ReplicaSets to retain to allow rollback. 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: php-apache
+ labels:
+   run: php-apache
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     run: php-apache
+ minReadySeconds: 1
+ strategy: # roll out strategy
+  rollingUpdate:
+    maxSurge: 1 # go aboove replicas 
+    maxUnavailable: 0 
+  type: RollingUpdate
+ template:
+   metadata:
+     labels:
+       run: php-apache
+   spec:
+     containers:
+     - name: nginx
+       image: k8s.gcr.io/hpa-example
+       ports:
+       - containerPort: 80
+       resources:
+        requests:
+          cpu: 200m
+        limits: 
+          cpu: 300m
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+spec:
+  type: ClusterIP
+  selector:
+    run: php-apache
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50 
+      

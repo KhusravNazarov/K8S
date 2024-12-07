@@ -1,0 +1,28 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Federated": "arn:aws:iam::767397701943:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/tmp-cluster"
+        },
+        "Action": "sts:AssumeRoleWithWebIdentity",
+        "Condition": {
+          "StringEquals": {
+            "oidc.eks.us-east-1.amazonaws.com/id/tmp-cluster:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+          }
+        }
+      }
+    ]
+  }
+
+  aws iam create-role --role-name AWSLoadBalancerControllerIAMRole \
+  --assume-role-policy-document file://trust-relationship.json
+
+aws iam attach-role-policy \
+  --role-name AWSLoadBalancerControllerIAMRole \
+  --policy-arn arn:aws:iam::767397701943:policy/AWSLoadBalancerControllerIAMPolicy
+  kubectl annotate serviceaccount  \
+  alb-ingress-controller --overwrite=true\
+  -n kube-system \
+  eks.amazonaws.com/role-arn=arn:aws:iam::767397701943:role/AWSLoadBalancerControllerIAMRole

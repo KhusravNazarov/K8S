@@ -1,0 +1,12 @@
+server:
+  persistentVolume:
+    enabled: true
+    size: 10Gi
+    storageClass: gp2  # Replace with your StorageClass, e.g., "gp2" on EKS
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "500m"
+    limits:
+      memory: "4Gi"
+      cpu: "1"
